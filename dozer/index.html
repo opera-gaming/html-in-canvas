@@ -1,0 +1,100 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS
+     SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Webpage Bulldozer</title>
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: #111; }
+      #view { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+      #hud {
+        position: fixed; left: 12px; bottom: 12px; z-index: 10; pointer-events: none; user-select: none;
+        padding: 6px 10px; border-radius: 6px; background: rgba(0, 0, 0, 0.7); color: #f2f2f2;
+        font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap;
+      }
+      #hud:empty { display: none; }
+      #hud .hints { color: #b8b8b8; }
+      /* Shown while a page text field has the keyboard (src/interaction.ts). */
+      #typing {
+        position: fixed; left: 50%; top: 12px; z-index: 12; transform: translateX(-50%); pointer-events: none;
+        user-select: none; padding: 6px 12px; border-radius: 6px; background: rgba(0, 0, 0, 0.7); color: #f2f2f2;
+        font: 12px/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; white-space: nowrap;
+      }
+      #typing[hidden] { display: none; }
+      #typing kbd { padding: 0 5px; border-radius: 3px; background: #ff1b2d; color: #fff; font: inherit; font-weight: 700; }
+      /* Key hint after the intro (src/keyhint.ts): two pulsing keycap clusters and "Drive". */
+      #keyhint {
+        position: fixed; left: 50%; bottom: 14vh; z-index: 11; transform: translateX(-50%); pointer-events: none;
+        user-select: none; display: flex; flex-direction: column; align-items: center; gap: 10px;
+        padding: 18px 26px 14px; border-radius: 20px; background: rgba(16, 17, 22, 0.78);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); animation: kh-pulse 1.6s ease-in-out infinite;
+        font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      #keyhint[hidden] { display: none; }
+      .kh-keys { display: flex; align-items: center; gap: 22px; }
+      .kh-cluster {
+        display: grid; gap: 6px; grid-template-columns: repeat(3, 46px); grid-template-rows: 46px 46px;
+        grid-template-areas: ". up ." "left down right";
+      }
+      .kh-key {
+        display: flex; align-items: center; justify-content: center; border-radius: 10px;
+        background: linear-gradient(#ffffff, #e4e6ec); color: #15161b; border: 1px solid #c4c8d2;
+        box-shadow: 0 4px 0 #9aa0ad, 0 6px 12px rgba(0, 0, 0, 0.35);
+        font: 700 22px/1 system-ui, -apple-system, sans-serif; animation: kh-press 1.6s ease-in-out infinite;
+      }
+      .kh-key:nth-child(2) { animation-delay: 0.2s; }
+      .kh-key:nth-child(3) { animation-delay: 0.4s; }
+      .kh-key:nth-child(4) { animation-delay: 0.6s; }
+      .kh-or { color: #c9ccd4; font: 600 16px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 0.1em; }
+      .kh-label { color: #fff; font: 800 22px/1 system-ui, sans-serif; letter-spacing: 0.18em; text-transform: uppercase; }
+      .kh-label::after { content: ''; display: block; height: 3px; margin-top: 6px; border-radius: 2px; background: #ff1b2d; }
+      @keyframes kh-pulse { 0%, 100% { opacity: 0.88; transform: translateX(-50%) scale(1); } 50% { opacity: 1; transform: translateX(-50%) scale(1.06); } }
+      @keyframes kh-press {
+        0%, 70%, 100% { transform: translateY(0); box-shadow: 0 4px 0 #9aa0ad, 0 6px 12px rgba(0, 0, 0, 0.35); background: linear-gradient(#ffffff, #e4e6ec); }
+        80% { transform: translateY(3px); box-shadow: 0 1px 0 #9aa0ad, 0 2px 6px rgba(0, 0, 0, 0.35); background: linear-gradient(#ffe3e5, #ffc2c7); }
+      }
+      @media (prefers-reduced-motion: reduce) { #keyhint, .kh-key { animation: none; } }
+      /* Loading veil (src/splash.ts): covers the page until it is ready, then lifts by itself. */
+      #splash {
+        position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center;
+        padding: 16px; background: radial-gradient(ellipse at center, rgba(20, 21, 28, 0.82), rgba(8, 8, 12, 0.95));
+        backdrop-filter: blur(6px); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      #splash[hidden] { display: none; }
+      .sp-card {
+        max-width: 560px; text-align: center; color: #f4f5f8; display: flex; flex-direction: column;
+        align-items: center; gap: 18px;
+      }
+      .sp-badge {
+        padding: 6px 14px; border-radius: 999px; background: rgba(255, 27, 45, 0.16); color: #ff5562;
+        font: 700 13px/1 system-ui, sans-serif; letter-spacing: 0.12em; text-transform: uppercase;
+      }
+      .sp-title { margin: 0; font: 900 clamp(40px, 8vw, 76px)/1 system-ui, -apple-system, sans-serif; letter-spacing: -0.03em; }
+      .sp-lede { margin: 0; color: #c9ccd6; font: 400 19px/1.45 system-ui, sans-serif; }
+      .sp-status { margin: 10px 0 0; color: #8d919e; font: 600 16px/1.4 system-ui, sans-serif; letter-spacing: 0.02em; }
+      /* Same link back as every page on the site: top left. */
+      /* On a pill: the page behind it is white. */
+      .all-demos {
+        position: fixed; left: 10px; top: 9px; z-index: 30; padding: 5px 10px; border-radius: 999px;
+        background: rgba(12, 12, 18, 0.72); color: #d9dbe4; text-decoration: none;
+        font: 14px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      .all-demos:hover { color: #fff; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" role="img" aria-label="A bulldozer driving through this web page, drawn into a WebGPU canvas. WASD or arrow keys drive, Space brakes, R resets, M mutes."></canvas>
+    <div id="hud"></div>
+    <div id="typing" hidden>Typing: <kbd>Esc</kbd> to drive</div>
+    <div id="keyhint" hidden></div>
+    <div id="splash" hidden></div>
+    <a class="all-demos" href="/">← All demos</a>
+    <script>
+      // Not inside the Gamer Room's arcade screen (an iframe): there it would be a link on a screen.
+      if (window.self !== window.top) document.querySelector('.all-demos').hidden = true;
+    </script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

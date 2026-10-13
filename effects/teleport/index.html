@@ -1,0 +1,74 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS
+     SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teleport</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root { --bg: #08090d; --dim: #a7adbd; --accent: #38c6ff; }
+      /* Ordinary DOM, not drawn through the effect. */
+      #controls {
+        position: fixed; left: 0; right: 0; top: max(48px, 9vh); z-index: 1;
+        display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding: 0 16px;
+      }
+      #controls h1 { margin: 0; font-size: 52px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+      #controls p { margin: 0; color: var(--dim); font-size: 16px; }
+      #panel {
+        box-sizing: border-box; width: 440px; padding: 26px 28px 28px; border-radius: 22px;
+        background: #161922; border: 1px solid #2b3040;
+        display: flex; flex-direction: column; gap: 16px;
+      }
+      #panel h2 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+      #panel p { margin: 0 0 4px; font-size: 15px; line-height: 1.45; color: var(--dim); }
+      #panel .colour-row { display: flex; align-items: center; justify-content: space-between; }
+      #panel .colour-row label { font-size: 15px; font-weight: 600; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" layoutsubtree content="drawable">
+      <div id="panel" drawable>
+        <h2>Teleport settings</h2>
+        <p>A real form, drawn into WebGL. Tune the beam here, then flip the switch above.</p>
+        <div class="colour-row">
+          <label for="colour">Beam colour</label>
+          <input id="colour" type="color" value="#38c6ff" />
+        </div>
+        <div class="field-row">
+          <label for="speed">Duration</label>
+          <input id="speed" type="range" min="0.3" max="3" step="0.1" value="1.2" />
+          <output for="speed"></output>
+        </div>
+        <div class="field-row">
+          <label for="grain">Grain</label>
+          <input id="grain" type="range" min="3" max="30" step="0.5" value="10" />
+          <output for="grain"></output>
+        </div>
+        <div class="field-row">
+          <label for="sweep">Sweep</label>
+          <input id="sweep" type="range" min="0" max="100" value="60" />
+          <output for="sweep"></output>
+        </div>
+        <div class="field-row">
+          <label for="edge">Edge</label>
+          <input id="edge" type="range" min="1" max="30" value="8" />
+          <output for="edge"></output>
+        </div>
+        <div class="field-row">
+          <label for="motes">Motes</label>
+          <input id="motes" type="range" min="0" max="100" value="80" />
+          <output for="motes"></output>
+        </div>
+      </div>
+    </canvas>
+    <div id="controls">
+      <h1>Beam me up</h1>
+      <p>The panel below is live HTML. Flip the switch to teleport it out and back.</p>
+      <button id="toggle" class="pill" role="switch" aria-checked="true"><span class="knob-track"></span>Panel</button>
+    </div>
+    <a class="back" href="/">← All demos</a>
+    <script type="module" src="/src/teleport.ts"></script>
+  </body>
+</html>

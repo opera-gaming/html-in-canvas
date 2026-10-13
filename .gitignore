@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.DS_Store
+/public/
+.vercel
+.env*
+# Built from ../dozer by tools/build-site.sh (see gamer-room/README.md)
+/gamer-room/public/replicas/dozer/
+# Snapshots of opera.com/gx and GX Corner (third-party content); made locally with gamer-room/tools/snapshot-site.mjs
+/gamer-room/public/replicas/gx/
+/gamer-room/public/replicas/gxcorner/

@@ -1,0 +1,8 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;height:100%;background:#0e0b1a;color:#eee;font-family:system-ui;display:grid;place-items:center;overflow:hidden}
+h1{font-size:8vmin;margin:0;background:linear-gradient(90deg,#f36,#fc0,#0cf,#f36);background-size:300%;-webkit-background-clip:text;color:transparent;animation:g 6s linear infinite}
+@keyframes g{to{background-position:300%}}
+#t{font:4vmin monospace;opacity:.7}
+</style></head><body><div><h1>HTML in Canvas</h1><div id="t"></div></div>
+<script>setInterval(()=>{document.getElementById('t').textContent=new Date().toLocaleTimeString()},500)</script>
+</body></html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS
+     SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Page Transitions</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root { --bg: #0b0b10; --dim: #a6a8b8; --accent: #ff3d6e; }
+      #bar {
+        position: fixed; left: 0; right: 0; top: 0; z-index: 1; padding: 14px 16px;
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px 16px;
+        background: rgba(11, 11, 16, 0.85); border-bottom: 1px solid #22232e;
+      }
+      /* room for the "All demos" link in the top-left corner, above the bar */
+      #bar { padding-left: 140px; padding-right: 140px; }
+      @media (max-width: 760px) { #bar { padding: 40px 16px 14px; } }
+      #bar h1 { margin: 0 8px 0 0; font-size: 20px; font-weight: 800; }
+      #bar select, #bar button {
+        height: 38px; border-radius: 10px; border: 1px solid #34364a; background: #1a1b25; color: var(--text);
+        font: 600 15px var(--font); padding: 0 12px; cursor: pointer;
+      }
+      #bar select { min-width: 220px; }
+      #bar button.go { background: var(--accent); border-color: var(--accent); color: #fff; padding: 0 22px; }
+      #bar .dur { display: flex; align-items: center; gap: 10px; color: var(--dim); font-size: 14px; font-weight: 600; }
+      #bar .dur input { width: 140px; }
+      #bar .dur output { width: 40px; color: var(--text); font-variant-numeric: tabular-nums; }
+      #credit { color: var(--dim); font-size: 13px; text-decoration: none; }
+      #credit:hover { text-decoration: underline; }
+      #bar label.shuffle { display: flex; align-items: center; gap: 6px; color: var(--dim); font-size: 14px; font-weight: 600; cursor: pointer; }
+      #status { position: fixed; left: 16px; bottom: 12px; z-index: 1; color: var(--dim); font-size: 13px; }
+
+      /* Both pages must be the same size. */
+      .page { box-sizing: border-box; width: 960px; height: 560px; overflow: hidden; border-radius: 16px; }
+
+      #page-a { background: #f6f3ef; color: #1d1a20; display: grid; grid-template-columns: 1.25fr 1fr; }
+      #page-a .hero { background: url(/img/steven.jpg) 40% 25% / cover; }
+      #page-a .side { padding: 40px 36px; display: flex; flex-direction: column; gap: 16px; }
+      #page-a h2 { margin: 0; font-size: 38px; font-weight: 900; letter-spacing: -0.03em; line-height: 1.05; }
+      #page-a p { margin: 0; color: #5d5866; font-size: 15px; line-height: 1.5; }
+      #page-a label { font-size: 13px; font-weight: 700; color: #5d5866; text-transform: uppercase; letter-spacing: 0.06em; }
+      #page-a input[type='text'], #page-a select {
+        width: 100%; box-sizing: border-box; height: 42px; padding: 0 12px; border-radius: 10px; border: 1px solid #d8d2ca;
+        background: #fff; color: #1d1a20; font: 15px var(--font);
+      }
+      #page-a .check { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+      #page-a .check input { width: 18px; height: 18px; accent-color: #ff1b2d; }
+      #page-a button {
+        margin-top: auto; height: 48px; border: 0; border-radius: 12px; background: #ff1b2d; color: #fff;
+        font: 700 16px var(--font); cursor: pointer;
+      }
+
+      #page-b {
+        background: radial-gradient(circle at 20% 15%, #4b1d8f 0, transparent 45%),
+          radial-gradient(circle at 85% 80%, #0e6b8c 0, transparent 50%), #0d0c18;
+        color: #f1effa; padding: 40px 44px; display: grid; grid-template-columns: 300px 1fr; gap: 40px;
+      }
+      #page-b .art {
+        width: 300px; height: 300px; border-radius: 20px;
+        background: conic-gradient(from 200deg, #ff3d6e, #ffb13d, #3dffb8, #3d8bff, #b03dff, #ff3d6e);
+        box-shadow: 0 20px 60px rgba(176, 61, 255, 0.35); position: relative;
+      }
+      #page-b .art::after {
+        content: ''; position: absolute; inset: 110px; border-radius: 50%; background: #0d0c18;
+        box-shadow: 0 0 0 14px rgba(13, 12, 24, 0.35);
+      }
+      #page-b .now { margin-top: 22px; }
+      #page-b .now strong { display: block; font-size: 22px; }
+      #page-b .now span { color: #a9a3c7; font-size: 15px; }
+      #page-b .controls { margin-top: 18px; display: flex; align-items: center; gap: 14px; }
+      #page-b .controls button {
+        width: 54px; height: 54px; border-radius: 50%; border: 0; background: #f1effa; color: #0d0c18;
+        font-size: 20px; cursor: pointer;
+      }
+      #page-b .controls input { flex: 1; --accent: #b03dff; }
+      #page-b h2 { margin: 0 0 14px; font-size: 30px; font-weight: 900; letter-spacing: -0.02em; }
+      #page-b ol { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; }
+      #page-b li {
+        display: grid; grid-template-columns: 28px 1fr auto; align-items: center; gap: 12px; padding: 10px 14px;
+        border-radius: 10px; background: rgba(255, 255, 255, 0.04); font-size: 15px;
+      }
+      #page-b li.on { background: rgba(176, 61, 255, 0.25); }
+      #page-b li b { color: #a9a3c7; font-weight: 600; }
+      #page-b li i { font-style: normal; color: #a9a3c7; font-variant-numeric: tabular-nums; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" layoutsubtree content="drawable">
+      <div id="page-a" class="page" drawable>
+        <div class="hero"></div>
+        <div class="side">
+          <h2>Plan Steven’s Saturday</h2>
+          <p>Two live pages in one canvas. Fill this one in for the cat, then pick a transition above and go.</p>
+          <label for="treat">Treat of the day</label>
+          <input id="treat" type="text" value="Prawns" />
+          <label for="nap">Nap spot</label>
+          <select id="nap"><option>Sunny windowsill</option><option>Warm laptop keyboard</option><option>Exactly where you were about to sit</option></select>
+          <span class="check"><input id="scratches" type="checkbox" checked /><label for="scratches" style="all: unset">Extra chin scratches</label></span>
+          <button type="button">Serve dinner</button>
+        </div>
+      </div>
+      <div id="page-b" class="page" drawable>
+        <div>
+          <div class="art"></div>
+          <div class="now"><strong>Night Drive</strong><span>The Canvas Children</span></div>
+          <div class="controls">
+            <button type="button" aria-label="Play">▶</button>
+            <input type="range" min="0" max="100" value="35" aria-label="Volume" />
+          </div>
+        </div>
+        <div>
+          <h2>Up next</h2>
+          <ol>
+            <li class="on"><b>01</b>Night Drive<i>3:42</i></li>
+            <li><b>02</b>Layout Subtree<i>4:05</i></li>
+            <li><b>03</b>Paint Event<i>2:58</i></li>
+            <li><b>04</b>Texture Upload<i>3:31</i></li>
+            <li><b>05</b>Hit Test Shuffle<i>5:12</i></li>
+            <li><b>06</b>Drawable<i>3:03</i></li>
+          </ol>
+        </div>
+      </div>
+    </canvas>
+    <div id="bar">
+      <h1>Transitions</h1>
+      <button type="button" id="prev" aria-label="Previous transition">◀</button>
+      <select id="pick" aria-label="Transition"></select>
+      <button type="button" id="next" aria-label="Next transition">▶</button>
+      <a id="credit" href="https://github.com/gl-transitions/gl-transitions" target="_blank" rel="noopener"></a>
+      <span class="dur"><label for="duration">Duration</label><input id="duration" type="range" min="0.3" max="4" step="0.1" value="1.5" /><output for="duration"></output></span>
+      <label class="shuffle"><input id="shuffle" type="checkbox" /> Shuffle</label>
+      <button type="button" class="go" id="go">Go</button>
+    </div>
+    <div id="status"></div>
+    <a class="back" href="/">← All demos</a>
+    <script type="module" src="/src/transitions/main.ts"></script>
+  </body>
+</html>

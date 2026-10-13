@@ -1,0 +1,9 @@
+**/node_modules
+**/dist
+/public
+gamer-room/blender
+**/*.blend
+**/*.blend1
+**/test-results
+**/tools/out
+**/.DS_Store

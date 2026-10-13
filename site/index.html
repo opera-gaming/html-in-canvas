@@ -1,0 +1,134 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML-in-Canvas Demos</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root { color-scheme: dark; --bg: #0d0d12; --card: #17171f; --line: #2a2a36; --text: #ececf1; --dim: #9a9aab; --accent: #fa1e4e; }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; background: var(--bg); color: var(--text);
+             font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; display: grid; place-items: center; padding: 48px 16px; }
+      main { width: 100%; max-width: 960px; }
+      h1 { font-size: 2rem; margin: 0 0 8px; }
+      p.lede { color: var(--dim); margin: 0 0 32px; }
+      h2.group { margin: 32px 0 12px; font-size: .8rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+      p.lede + h2.group { margin-top: 0; }
+      .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+      a.card { display: block; padding: 24px; background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+               color: inherit; text-decoration: none; transition: border-color .15s, transform .15s; }
+      a.card:hover, a.card:focus-visible { border-color: var(--accent); transform: translateY(-2px); outline: none; }
+      a.card h2 { margin: 0 0 6px; font-size: 1.25rem; }
+      a.card p { margin: 0; color: var(--dim); font-size: .95rem; }
+      a.card span { display: inline-block; margin-top: 16px; color: var(--accent); font-weight: 600; }
+      /* Demo tiles: a looping clip behind, text on a dark gradient at the bottom so it reads over any frame. */
+      a.card.media { position: relative; overflow: hidden; min-height: 300px; padding: 0; display: flex; flex-direction: column; justify-content: flex-end; }
+      a.card.media video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.78); }
+      a.card.media .body {
+        position: relative; padding: 72px 24px 24px;
+        background: linear-gradient(to top, rgba(9, 9, 13, 0.96) 0%, rgba(9, 9, 13, 0.9) 60%, rgba(9, 9, 13, 0.55) 82%, rgba(9, 9, 13, 0) 100%);
+      }
+      a.card.media p { color: #cfcfdb; }
+      a.card.media h2, a.card.media p { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+      .req { margin-top: 32px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 12px; color: var(--dim); font-size: .9rem; }
+      .req strong { color: var(--text); }
+      footer { margin-top: 24px; font-size: .85rem; }
+      footer a { color: var(--dim); }
+      code { background: #23232d; padding: 1px 6px; border-radius: 4px; font-size: .85em; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>HTML-in-Canvas demos</h1>
+      <p class="lede">Live DOM drawn into canvas and WebGPU scenes.</p>
+      <h2 class="group">Demos</h2>
+      <div class="cards">
+        <a class="card media" href="/room/">
+          <video muted loop playsinline preload="none" poster="/media/gaming-room.jpg" aria-hidden="true"><source src="/media/gaming-room.webm" type="video/webm" /><source src="/media/gaming-room.mp4" type="video/mp4" /></video>
+          <div class="body">
+            <h2>Gamer Room</h2>
+            <p>A three.js gaming room whose screens show live, interactive web pages.</p>
+            <span>Open →</span>
+          </div>
+        </a>
+        <a class="card media" href="/dozer/">
+          <video muted loop playsinline preload="none" poster="/media/dozer.jpg" aria-hidden="true"><source src="/media/dozer.webm" type="video/webm" /><source src="/media/dozer.mp4" type="video/mp4" /></video>
+          <div class="body">
+            <h2>Webpage Bulldozer</h2>
+            <p>A WebGPU bulldozer pushes a real webpage's words, images and widgets into piles.</p>
+            <span>Open →</span>
+          </div>
+        </a>
+        <a class="card media" href="/ninja/">
+          <video muted loop playsinline preload="none" poster="/media/ninja.jpg" aria-hidden="true"><source src="/media/ninja.webm" type="video/webm" /><source src="/media/ninja.mp4" type="video/mp4" /></video>
+          <div class="body">
+            <h2>HTML Ninja</h2>
+            <p>Slice flying buttons, banners and toggles with your cursor. Whatever you do, don't slice the molotov.</p>
+            <span>Open →</span>
+          </div>
+        </a>
+      </div>
+      <h2 class="group">Effects</h2>
+      <div class="cards">
+        <a class="card" href="/hello/">
+          <h2>Hello, Canvas</h2>
+          <p>The smallest example: a live HTML card waving in a WebGL shader. One file, no build, easy to read.</p>
+          <span>Open →</span>
+        </a>
+        <a class="card" href="/teleport/">
+          <h2>Teleport</h2>
+          <p>Flip a switch to beam a live settings form out in glowing motes, and back in.</p>
+          <span>Open →</span>
+        </a>
+        <a class="card" href="/post/">
+          <h2>Post-Processing</h2>
+          <p>Bloom, motion blur, screen fringe and vignette over a live, animated page.</p>
+          <span>Open →</span>
+        </a>
+        <a class="card" href="/transitions/">
+          <h2>Page Transitions</h2>
+          <p>Pick any of 56 game transitions and turn one live page into another.</p>
+          <span>Open →</span>
+        </a>
+        <a class="card" href="/fire/">
+          <h2>Slider on Fire</h2>
+          <p>A real range slider drawn into WebGL. Drag it to set the page alight.</p>
+          <span>Open →</span>
+        </a>
+        <a class="card" href="/endgame/">
+          <h2>Dust to Dust</h2>
+          <p>A live form turns to stone, crumbles and blows away on the wind. Switch it back to rebuild it.</p>
+          <span>Open →</span>
+        </a>
+        <a class="card" href="/frost/">
+          <h2>Frosty Checkboxes</h2>
+          <p>Real checkboxes that frost over when you tick them, with sliders to tune the ice.</p>
+          <span>Open →</span>
+        </a>
+        <a class="card" href="/electric/">
+          <h2>High Voltage</h2>
+          <p>Turn up the voltage and real form controls crackle with arcs of electricity.</p>
+          <span>Open →</span>
+        </a>
+      </div>
+      <div class="req">
+        <strong>Requirements:</strong> Opera GX or another recent Chromium with HTML-in-Canvas enabled:
+        <code>opera://flags/#canvas-draw-element</code> (or <code>chrome://flags/#canvas-draw-element</code>) → Enabled, then relaunch.
+        The bulldozer also needs WebGPU; HTML Ninja and the effects need WebGL2.
+      </div>
+      <footer><a href="/licenses/">Licenses</a></footer>
+    </main>
+    <script>
+      // Reduced motion keeps the poster frame and never downloads the videos.
+      if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        for (const v of document.querySelectorAll('a.card.media video')) {
+          v.preload = 'auto';
+          v.play().catch(() => {});
+        }
+      }
+    </script>
+  </body>
+</html>

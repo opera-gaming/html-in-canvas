@@ -1,0 +1,143 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS -->
+<!-- SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML Ninja</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Bungee&display=block" rel="stylesheet" />
+    <style>
+      :root { --bg: #2a170c; --accent: #ffcc33; }
+      html, body { touch-action: none; user-select: none; -webkit-user-select: none; }
+      #view { cursor: crosshair; }
+      #hud {
+        position: fixed; left: 20px; top: 38px; z-index: 1; pointer-events: none;
+        font: 44px 'Bungee', var(--font); color: #ffcc33; -webkit-text-stroke: 2px #3b1d05;
+        paint-order: stroke fill; text-shadow: 0 4px 0 #3b1d05;
+      }
+      #hud small { display: block; font-size: 16px; color: #ffe9b0; -webkit-text-stroke: 1px #3b1d05; text-shadow: none; }
+      a.back { color: #e8d2b6; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6); }
+      /* Music toggle and the track's credit (CC BY 4.0 requires attribution). */
+      #music {
+        position: fixed; right: 16px; bottom: 12px; z-index: 2; display: flex; align-items: center; gap: 12px;
+        font: 13px var(--font); color: #e8d2b6; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+      }
+      #music a { color: #ffe9b0; }
+      #sound {
+        height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid rgba(255, 233, 176, 0.5);
+        background: rgba(42, 23, 12, 0.7); color: #ffe9b0; font: 600 13px var(--font); cursor: pointer;
+      }
+
+      /* Targets: canvas children, only seen through their captures. data-juice is the splatter colour. */
+      .t { box-sizing: border-box; font-family: var(--font); }
+      .btn { padding: 18px 30px; border-radius: 14px; font-weight: 800; font-size: 24px; color: #fff; white-space: nowrap; }
+      #t-subscribe { background: #ff2d55; }
+      #t-buy { background: #ffcc00; color: #2a1a00; }
+      #t-cookies {
+        width: 300px; padding: 18px; border-radius: 16px; background: #fff; color: #222; font-size: 15px; line-height: 1.35;
+      }
+      #t-cookies b { display: block; font-size: 18px; margin-bottom: 6px; }
+      #t-cookies span { display: inline-block; margin-top: 10px; padding: 8px 14px; border-radius: 8px; background: #2d7dff; color: #fff; font-weight: 700; }
+      #t-toggle { width: 120px; height: 64px; border-radius: 32px; background: #34c759; position: relative; }
+      #t-toggle::after { content: ''; position: absolute; right: 6px; top: 6px; width: 52px; height: 52px; border-radius: 50%; background: #fff; }
+      #t-stars { font-size: 46px; color: #ffc61a; letter-spacing: 2px; padding: 4px 8px; }
+      #t-mail {
+        width: 280px; padding: 16px 18px; border-radius: 16px; background: #6e3dff; color: #fff; display: flex; gap: 14px; align-items: center;
+      }
+      #t-mail i { font-style: normal; font-size: 38px; }
+      #t-mail b { display: block; font-size: 18px; }
+      #t-mail span { font-size: 14px; opacity: 0.85; }
+      #t-captcha {
+        width: 270px; padding: 16px; border-radius: 6px; background: #f9f9f9; border: 2px solid #d3d3d3; color: #222;
+        display: flex; align-items: center; gap: 14px; font-size: 18px;
+      }
+      #t-captcha em { width: 30px; height: 30px; border: 3px solid #888; border-radius: 4px; background: #fff; }
+      #t-slider { width: 240px; padding: 14px 16px; border-radius: 30px; background: #ff8a1f; }
+      #t-slider div { height: 12px; border-radius: 6px; background: rgba(255, 255, 255, 0.5); position: relative; }
+      #t-slider div::after { content: ''; position: absolute; left: 60%; top: -10px; width: 32px; height: 32px; border-radius: 50%; background: #fff; }
+      #t-clock {
+        padding: 12px 22px; border-radius: 16px; background: #0d2b3a; color: #39e6ff; font: 700 40px ui-monospace, Menlo, monospace;
+        font-variant-numeric: tabular-nums; border: 3px solid #39e6ff;
+      }
+      #t-spinner { width: 110px; height: 110px; border-radius: 50%; border: 14px solid rgba(255, 61, 222, 0.25); border-top-color: #ff3dde; animation: spin 0.9s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      #t-ad {
+        width: 250px; padding: 18px; border-radius: 14px; text-align: center; color: #fff; font-weight: 900; font-size: 30px;
+        background: repeating-linear-gradient(45deg, #ff2e93 0 16px, #ff5cb0 16px 32px); border: 4px dashed #fff;
+      }
+      #t-ad small { display: block; font-size: 15px; font-weight: 700; }
+      #t-search {
+        width: 280px; padding: 14px 18px; border-radius: 28px; background: #fff; color: #888; font-size: 18px;
+        border: 3px solid #4f8cff; display: flex; align-items: center; gap: 10px;
+      }
+      #t-search i { font-style: normal; font-size: 20px; }
+      #t-progress { width: 260px; padding: 14px 16px; border-radius: 14px; background: #1c2230; color: #dfe6f5; font-size: 15px; font-weight: 700; }
+      #t-progress div { margin-top: 8px; height: 12px; border-radius: 6px; background: #313a4f; overflow: hidden; }
+      #t-progress div::after { content: ''; display: block; width: 72%; height: 100%; background: linear-gradient(90deg, #22d3a6, #3ef0c2); }
+      #t-signin { background: #24292f; display: flex; align-items: center; gap: 12px; }
+      #t-signin i { font-style: normal; width: 26px; height: 26px; border-radius: 50%; background: #fff; }
+
+      /* The bomb (a molotov cocktail). */
+      #t-bomb { width: 120px; height: 120px; }
+      #t-bomb img { display: block; width: 120px; height: 120px; }
+
+      /* Menu target: slice it to (re)start. */
+      #t-menu {
+        width: 360px; padding: 26px 24px; border-radius: 26px; text-align: center; color: #fff;
+        background: radial-gradient(circle at 50% 30%, #ffd84d, #ff8a00); border: 6px solid #fff3c4;
+        font-family: 'Bungee', var(--font); -webkit-text-stroke: 1.5px #5a2a00; paint-order: stroke fill;
+      }
+      #t-menu b { display: block; font-size: 44px; line-height: 1.05; }
+      #t-menu span { display: block; margin-top: 10px; font-size: 18px; }
+
+      /* Score popups: a pool, each its own texture. */
+      .pop {
+        font: 54px 'Bungee', var(--font); color: #fff; -webkit-text-stroke: 3px #2b1300; paint-order: stroke fill;
+        padding: 6px 10px; white-space: nowrap;
+      }
+      .pop.combo { color: #ffb21a; font-size: 64px; }
+      .pop.combo small { display: block; font-size: 28px; color: #fff3c4; text-align: center; }
+      .pop.boom { color: #ff2b3d; font-size: 80px; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" layoutsubtree content="drawable">
+      <div class="t btn" id="t-subscribe" drawable data-juice="#ff2d55">Subscribe</div>
+      <div class="t btn" id="t-buy" drawable data-juice="#ffcc00">Buy now!</div>
+      <div class="t" id="t-cookies" drawable data-juice="#2d7dff"><b>🍪 We value your privacy</b>We and our 847 partners use cookies.<br /><span>Accept all</span></div>
+      <div class="t" id="t-toggle" drawable data-juice="#34c759"></div>
+      <div class="t" id="t-stars" drawable data-juice="#ffc61a">★★★★☆</div>
+      <div class="t" id="t-mail" drawable data-juice="#6e3dff"><i>✉️</i><div><b>You've got mail</b><span>3 new messages</span></div></div>
+      <div class="t" id="t-captcha" drawable data-juice="#9aa3ad"><em></em>I'm not a robot</div>
+      <div class="t" id="t-slider" drawable data-juice="#ff8a1f"><div></div></div>
+      <div class="t" id="t-clock" drawable data-juice="#39e6ff">00:00:00</div>
+      <div class="t" id="t-spinner" drawable data-juice="#ff3dde"></div>
+      <div class="t" id="t-ad" drawable data-juice="#ff2e93">YOU WON!<small>Click to claim your prize</small></div>
+      <div class="t" id="t-search" drawable data-juice="#4f8cff"><i>🔍</i>Search…</div>
+      <div class="t" id="t-progress" drawable data-juice="#22d3a6">Uploading… 72%<div></div></div>
+      <div class="t btn" id="t-signin" drawable data-juice="#8b949e"><i></i>Sign in</div>
+      <div class="t" id="t-bomb" drawable data-bomb data-juice="#ff1b2d">
+        <img src="/img/molotov.png" width="120" height="120" alt="Molotov cocktail" />
+      </div>
+      <div class="t" id="t-menu" drawable data-juice="#ffb21a" data-menu><b id="menu-title">HTML<br />NINJA</b><span id="menu-sub">Slice me to start</span></div>
+      <div class="pop" drawable></div>
+      <div class="pop" drawable></div>
+      <div class="pop" drawable></div>
+      <div class="pop" drawable></div>
+      <div class="pop" drawable></div>
+      <div class="pop" drawable></div>
+    </canvas>
+    <div id="hud"><span id="score">0</span><small id="best">BEST 0</small></div>
+    <a class="back" href="/">← All demos</a>
+    <div id="music">
+      <span>Music: <a href="https://freemusicarchive.org/music/Ketsa/silly-happy/little-chaos/" target="_blank" rel="noopener">“Little Chaos” by Ketsa</a>
+        · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></span>
+      <button type="button" id="sound" aria-label="Music" aria-pressed="false">♪ Play music</button>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

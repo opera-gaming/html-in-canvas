@@ -1,0 +1,13 @@
+{
+  "rename": {
+    "Arcade_Screen": "Screen_Arcade",
+    "monitor_stand.001": "Screen_MonL",
+    "monitor.002": "Screen_MonR"
+  },
+  "drop_collections": ["Collection.001"],
+  "drop_objects": ["Camera.002"],
+  "image_format": "WEBP",
+  "image_quality": 80,
+  "max_texture_size": 2048,
+  "nudge": {}
+}

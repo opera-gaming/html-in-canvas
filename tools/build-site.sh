@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Copyright 2026, Opera Norway AS
+# SPDX-License-Identifier: Apache-2.0
+#
+# Assemble the demos into one static site in ./public (Vercel's output dir):
+#   /        landing page (site/index.html)
+#   /room/   gamer-room page; its assets stay at the root because the room loads /models, /replicas, ... absolutely
+#   /dozer/  dozer, built with base /dozer/
+#   /fire/, /teleport/, /endgame/, /electric/, /transitions/, /post/, /frost/   the effects pages (one Vite project, effects/)
+#   /ninja/  HTML Ninja, built with base /ninja/
+#   /hello/  the minimal example (hello/index.html, no build)
+#   /licenses/  third-party notices (site/licenses.html)
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+(cd dozer && npm ci && npx tsc --noEmit && npx vite build --base /dozer/)
+# The room's arcade screen embeds its own build of the dozer.
+(cd dozer && npx vite build --base /replicas/dozer/ --outDir ../gamer-room/public/replicas/dozer --emptyOutDir)
+(cd gamer-room && npm ci && npm run build)
+(cd effects && npm ci && npm run build)
+(cd ninja && npm ci && npx tsc --noEmit && npx vite build --base /ninja/)
+
+rm -rf public
+cp -R gamer-room/dist public
+mkdir -p public/room
+mv public/index.html public/room/index.html
+cp -R dozer/dist public/dozer
+cp -R effects/dist/. public/
+cp -R ninja/dist public/ninja
+cp site/index.html public/index.html
+cp site/favicon.svg public/favicon.svg
+cp -R hello public/hello
+mkdir -p public/licenses
+cp site/licenses.html public/licenses/index.html
+cp -R site/media public/media

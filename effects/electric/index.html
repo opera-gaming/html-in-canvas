@@ -1,0 +1,57 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS
+     SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>High Voltage</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root { --bg: #07080d; --dim: #a3abc4; --accent: #8fa4ff; }
+      #panel { box-sizing: border-box; width: 520px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+      #panel h1 { margin: 0 0 6px; font-size: 64px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+      #panel .main { display: flex; align-items: center; gap: 18px; width: 100%; margin-bottom: 8px; }
+      #panel .main output { width: 64px; text-align: right; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+      #voltage { flex: 1; }
+      #voltage::-webkit-slider-runnable-track { height: 12px; border-radius: 6px; }
+      #voltage::-webkit-slider-thumb { width: 30px; height: 30px; margin-top: -9px; }
+      #panel .colour-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+      #panel .colour-row label { font-size: 15px; font-weight: 600; color: var(--dim); }
+      #panel p { margin: 6px 0 0; font-size: 15px; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" layoutsubtree content="drawable">
+      <div id="panel" drawable>
+        <h1>High voltage</h1>
+        <div class="main">
+          <input id="voltage" type="range" min="0" max="100" value="0" aria-label="Voltage" />
+          <output for="voltage"></output>
+        </div>
+        <div class="field-row">
+          <label for="flicker">Flicker</label>
+          <input id="flicker" type="range" min="2" max="30" step="0.5" value="12" />
+          <output for="flicker"></output>
+        </div>
+        <div class="field-row">
+          <label for="jag">Jagged</label>
+          <input id="jag" type="range" min="0" max="100" value="100" />
+          <output for="jag"></output>
+        </div>
+        <div class="field-row">
+          <label for="detail">Detail</label>
+          <input id="detail" type="range" min="4" max="30" step="0.5" value="13.5" />
+          <output for="detail"></output>
+        </div>
+        <div class="colour-row">
+          <label for="colour">Arc colour</label>
+          <input id="colour" type="color" value="#8fa4ff" />
+        </div>
+        <p>Real form controls, drawn into WebGL and charged up.</p>
+      </div>
+    </canvas>
+    <a class="back" href="/">← All demos</a>
+    <script type="module" src="/src/electric.ts"></script>
+  </body>
+</html>

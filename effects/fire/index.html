@@ -1,0 +1,35 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS
+     SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Slider on Fire</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      #panel { box-sizing: border-box; width: 520px; display: flex; flex-direction: column; align-items: center; gap: 22px; }
+      #panel h1 { margin: 0; font-size: 64px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; }
+      #panel .row { display: flex; align-items: center; gap: 18px; width: 100%; }
+      #panel output { width: 64px; text-align: right; font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; }
+      #heat { flex: 1; }
+      #heat::-webkit-slider-runnable-track { height: 12px; border-radius: 6px; }
+      #heat::-webkit-slider-thumb { width: 30px; height: 30px; margin-top: -9px; }
+      #panel p { margin: 0; font-size: 15px; color: var(--dim); }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" layoutsubtree content="drawable">
+      <div id="panel" drawable>
+        <h1>Turn up the heat</h1>
+        <div class="row">
+          <input id="heat" type="range" min="0" max="100" value="0" aria-label="Fire intensity" />
+          <output for="heat">0%</output>
+        </div>
+        <p>A real &lt;input type="range"&gt;, drawn into WebGL and set alight.</p>
+      </div>
+    </canvas>
+    <a class="back" href="/">← All demos</a>
+    <script type="module" src="/src/fire.ts"></script>
+  </body>
+</html>

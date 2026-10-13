@@ -1,0 +1,110 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS
+     SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Post-Processing</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root { --bg: #08080e; --dim: #9fa2b8; --accent: #ff2bd6; }
+      #fx {
+        position: fixed; right: 0; top: 0; bottom: 0; z-index: 1; width: 330px; box-sizing: border-box; overflow: auto;
+        padding: 22px 20px; background: #101019; border-left: 1px solid #22233a;
+        display: flex; flex-direction: column; gap: 18px;
+      }
+      #fx h1 { margin: 0; font-size: 22px; font-weight: 800; }
+      #fx p { margin: 0; color: var(--dim); font-size: 14px; line-height: 1.45; }
+      #fx fieldset { margin: 0; padding: 12px 14px 14px; border: 1px solid #2a2b42; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; }
+      #fx legend { padding: 0 6px; font-weight: 700; font-size: 15px; }
+      #fx legend label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+      #fx legend input { width: 16px; height: 16px; accent-color: var(--accent); }
+      #fx .field-row { grid-template-columns: 74px 1fr 48px; gap: 10px; }
+      #fx .field-row label { font-size: 13px; }
+      #fx .field-row output { font-size: 13px; }
+      #fx fieldset:has(legend input:not(:checked)) .field-row { opacity: 0.4; }
+
+      #page {
+        box-sizing: border-box; width: 820px; height: 540px; overflow: hidden; position: relative; border-radius: 16px;
+        background:
+          linear-gradient(rgba(43, 255, 242, 0.06) 1px, transparent 1px) 0 0 / 40px 40px,
+          linear-gradient(90deg, rgba(43, 255, 242, 0.06) 1px, transparent 1px) 0 0 / 40px 40px,
+          radial-gradient(circle at 50% 120%, #3a0a5c 0, transparent 60%), #0a0914;
+        color: #f2f0ff; font-family: var(--font); padding: 36px 44px;
+      }
+      #page.nogrid { background: radial-gradient(circle at 50% 120%, #3a0a5c 0, transparent 60%), #0a0914; }
+      #page .tag { color: #2bfff2; font-weight: 800; letter-spacing: 0.3em; font-size: 13px; }
+      #page h2 {
+        margin: 8px 0 0; font-size: 104px; font-weight: 900; letter-spacing: -0.04em; line-height: 0.95;
+        color: #fff; text-shadow: 0 0 2px #ff2bd6;
+      }
+      #page h2 span { color: #ff2bd6; }
+      #page .track { position: relative; height: 90px; margin: 26px 0 18px; border-radius: 45px; background: rgba(255, 255, 255, 0.04); }
+      /* Moved by src/post.ts, not CSS animations, so the speed slider changes only the rate. */
+      #page .comet {
+        position: absolute; left: 10px; top: 15px; width: 60px; height: 60px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 35%, #ffffff, #ffe95c 40%, #ff8a00 75%);
+      }
+      #page .ring {
+        position: absolute; right: 44px; top: 40px; width: 120px; height: 120px; border-radius: 50%;
+        border: 10px solid transparent; border-top-color: #2bfff2; border-right-color: #ff2bd6;
+      }
+      #page .row { display: flex; align-items: center; gap: 22px; }
+      #page .score { display: flex; flex-direction: column; }
+      #page .score small { color: #9fa2b8; font-size: 12px; font-weight: 700; letter-spacing: 0.2em; }
+      #page .score b { font-size: 34px; font-variant-numeric: tabular-nums; color: #ffe95c; }
+      #page button {
+        width: 130px; height: 50px; padding: 0; border: 0; border-radius: 25px; background: #ff2bd6; color: #fff;
+        font: 800 17px var(--font); letter-spacing: 0.05em; cursor: pointer;
+      }
+      #page .speed { display: flex; align-items: center; gap: 10px; color: #9fa2b8; font-size: 14px; font-weight: 700; }
+      #page .speed input { width: 160px; --accent: #2bfff2; }
+      #page .check { display: flex; align-items: center; gap: 8px; color: #9fa2b8; font-size: 14px; font-weight: 700; }
+      #page .check input { width: 18px; height: 18px; accent-color: #2bfff2; }
+    </style>
+  </head>
+  <body>
+    <canvas id="view" layoutsubtree content="drawable">
+      <div id="page" drawable>
+        <div class="ring"></div>
+        <div class="tag">HTML · IN · CANVAS</div>
+        <h2>NEON<br /><span>RUN</span></h2>
+        <div class="track"><div class="comet"></div></div>
+        <div class="row">
+          <div class="score"><small>HIGH SCORE</small><b id="score">128 450</b></div>
+          <button type="button" id="pause">PAUSE</button>
+          <label class="speed">Speed <input id="speed" type="range" min="0.25" max="3" step="0.05" value="1" /></label>
+          <label class="check"><input id="grid" type="checkbox" checked /> Grid</label>
+        </div>
+      </div>
+    </canvas>
+    <aside id="fx">
+      <h1>Post-processing</h1>
+      <p>The page on the left is live HTML. These effects run over it every frame, like a game's post-process chain.</p>
+      <fieldset>
+        <legend><label><input type="checkbox" id="on-motion" checked /> Motion blur</label></legend>
+        <div class="field-row"><label for="motion-blend">Blend</label><input id="motion-blend" type="range" min="0" max="0.95" step="0.01" value="0.65" /><output for="motion-blend"></output></div>
+      </fieldset>
+      <fieldset>
+        <legend><label><input type="checkbox" id="on-bloom" checked /> Bloom</label></legend>
+        <div class="field-row"><label for="bloom-threshold">Threshold</label><input id="bloom-threshold" type="range" min="0" max="1" step="0.01" value="0.6" /><output for="bloom-threshold"></output></div>
+        <div class="field-row"><label for="bloom-intensity">Intensity</label><input id="bloom-intensity" type="range" min="0" max="4" step="0.05" value="1.25" /><output for="bloom-intensity"></output></div>
+        <div class="field-row"><label for="bloom-scale">Size</label><input id="bloom-scale" type="range" min="2" max="6" step="1" value="5" /><output for="bloom-scale"></output></div>
+      </fieldset>
+      <fieldset>
+        <legend><label><input type="checkbox" id="on-fringe" checked /> Screen fringe</label></legend>
+        <div class="field-row"><label for="fringe-intensity">Intensity</label><input id="fringe-intensity" type="range" min="0" max="0.2" step="0.005" value="0.03" /><output for="fringe-intensity"></output></div>
+        <div class="field-row"><label for="fringe-saturation">Saturation</label><input id="fringe-saturation" type="range" min="0" max="1" step="0.01" value="0.75" /><output for="fringe-saturation"></output></div>
+      </fieldset>
+      <fieldset>
+        <legend><label><input type="checkbox" id="on-vignette" checked /> Vignette</label></legend>
+        <div class="field-row"><label for="vignette-intensity">Intensity</label><input id="vignette-intensity" type="range" min="0" max="1" step="0.01" value="1" /><output for="vignette-intensity"></output></div>
+        <div class="field-row"><label for="vignette-start">Start</label><input id="vignette-start" type="range" min="0" max="1" step="0.01" value="0.4" /><output for="vignette-start"></output></div>
+        <div class="field-row"><label for="vignette-stop">Stop</label><input id="vignette-stop" type="range" min="0" max="1.5" step="0.01" value="0.7" /><output for="vignette-stop"></output></div>
+      </fieldset>
+    </aside>
+    <a class="back" href="/">← All demos</a>
+    <script type="module" src="/src/post.ts"></script>
+  </body>
+</html>

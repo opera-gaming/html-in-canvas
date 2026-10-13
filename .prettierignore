@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+/public
+**/public
+**/package-lock.json
+*.html
+*.md
+effects/src/transitions/generated.ts

@@ -1,0 +1,26 @@
+HTML-in-Canvas demos
+Copyright 2026, Opera Norway AS
+
+This product is licensed under the Apache License 2.0 (see LICENSE). It includes the following third-party work,
+listed in full, with license texts, in site/licenses.html.
+
+Music (CC BY 4.0, https://creativecommons.org/licenses/by/4.0/)
+- "Statik" by 1000 Handz
+  https://freemusicarchive.org/music/1000-handz/cc-by-free-to-use-electronicgaming-instrumentals/statik/
+- "Little Chaos" by Ketsa
+  https://freemusicarchive.org/music/Ketsa/silly-happy/little-chaos/
+
+Page transitions (MIT), effects/src/transitions/generated.ts
+- gl-transitions, Copyright (c) 2017-present gl-transitions contributors, https://github.com/gl-transitions/gl-transitions
+- webgl-noise simplex noise, Copyright (C) 2011 Ashima Arts, https://github.com/ashima/webgl-noise
+
+Photos (public domain, CC0), from Wikimedia Commons, resized and cropped
+- dozer/public/page/tram.jpg: "Malmo historic tram citadel" by Jan Pešula
+- dozer/public/page/duck.jpg: "Day 60 Just ducky" by terri_bateman
+- dozer/public/page/buns.jpg: "Cardamom buns" by W.carter
+
+Bundled in the built gaming room
+- three.js (MIT), Copyright © 2010-2026 three.js authors
+- postprocessing (Zlib), Copyright © 2015 Raoul van Rüschen
+- N8AO (CC0 1.0, public domain)
+

@@ -1,0 +1,150 @@
+<!doctype html>
+<!-- Copyright 2026, Opera Norway AS
+     SPDX-License-Identifier: Apache-2.0 -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hello, HTML-in-Canvas</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <style>
+      html, body { margin: 0; height: 100%; overflow: hidden; background: radial-gradient(circle at 50% 40%, #2a1f4d, #0b0a14); }
+      canvas { position: fixed; inset: 0; width: 100vw; height: 100vh; }
+      #card {
+        box-sizing: border-box; width: 440px; padding: 32px; border-radius: 20px;
+        background: linear-gradient(135deg, #ff5a8a, #7b5cff); color: #fff;
+        font: 16px/1.5 system-ui, sans-serif;
+      }
+      #card h1 { margin: 0 0 8px; font-size: 34px; }
+      #card p { margin: 0 0 20px; }
+      #card input, #card button { font: inherit; padding: 8px 12px; border-radius: 10px; border: 0; }
+      #card button { background: #fff; color: #7b5cff; font-weight: 700; cursor: pointer; }
+      .back {
+        position: fixed; left: 16px; top: 14px; z-index: 2; color: #b9bccb; text-decoration: none;
+        font: 14px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      }
+      .back:hover { color: #fff; }
+      #unsupported:not([hidden]) { position: fixed; inset: 0; display: grid; place-items: center; color: #fff; font: 18px system-ui; }
+    </style>
+  </head>
+  <body>
+    <!-- The canvas lays out its drawable children so they can be drawn into it; they stay live and clickable.
+         Builds differ in naming: older ones use layoutsubtree, newer ones content="drawable" and drawable. -->
+    <canvas id="view" layoutsubtree content="drawable">
+      <div id="card" drawable>
+        <h1>Hello, canvas!</h1>
+        <p>This is real HTML, waving in a WebGL shader. Type in it, click it.</p>
+        <input placeholder="Type here" />
+        <button id="count">Clicked 0 times</button>
+      </div>
+    </canvas>
+    <a class="back" href="/">← All demos</a>
+    <div id="unsupported" hidden></div>
+
+    <script>
+      const canvas = document.getElementById('view');
+      const card = document.getElementById('card');
+      const gl = canvas.getContext('webgl2');
+      let clicks = 0;
+      document.getElementById('count').onclick = (e) => (e.target.textContent = `Clicked ${++clicks} times`);
+
+      const why = !gl
+        ? 'This demo needs WebGL2.'
+        : (!gl.texElementImage2D || !canvas.requestPaint) && 'Enable chrome://flags/#canvas-draw-element (or opera://flags/…) and relaunch.';
+      if (why) {
+        Object.assign(document.getElementById('unsupported'), { textContent: why, hidden: false });
+        throw new Error(why);
+      }
+
+      // A lost context takes the shader and texture with it; reloading is the simplest way to rebuild them.
+      canvas.addEventListener('webglcontextlost', (e) => e.preventDefault());
+      canvas.addEventListener('webglcontextrestored', () => location.reload());
+
+      // One triangle covering the viewport; uv is 0..1 across it with y down, like the page.
+      const vs = `#version 300 es
+        out vec2 uv;
+        void main() {
+          vec2 p = vec2((gl_VertexID << 1) & 2, gl_VertexID & 2);
+          uv = vec2(p.x, 1.0 - p.y);
+          gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);
+        }`;
+      // The card waves like a flag: shift each pixel along a travelling sine and shade it by the wave's slope.
+      const fs = `#version 300 es
+        precision highp float;
+        uniform sampler2D card;
+        uniform vec2 size;  // card size, CSS px
+        uniform float pad;  // room around the card for the wave, CSS px
+        uniform float time;
+        in vec2 uv;
+        out vec4 color;
+        void main() {
+          vec2 px = uv * (size + 2.0 * pad) - pad;  // CSS px from the card's top-left
+          float phase = px.x * 0.015 + px.y * 0.005 - time * 2.5;
+          float lift = 8.0 * sin(phase) * (0.3 + 0.7 * px.x / size.x);
+          vec2 src = (px - vec2(0.0, lift)) / size;
+          if (any(lessThan(src, vec2(0.0))) || any(greaterThan(src, vec2(1.0)))) discard;
+          float shade = 1.0 + 0.35 * cos(phase);
+          color = texture(card, src);
+          color.rgb *= shade;
+        }`;
+
+      const compile = (type, src) => {
+        const s = gl.createShader(type);
+        gl.shaderSource(s, src);
+        gl.compileShader(s);
+        if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+        return s;
+      };
+      const prog = gl.createProgram();
+      gl.attachShader(prog, compile(gl.VERTEX_SHADER, vs));
+      gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, fs));
+      gl.linkProgram(prog);
+      gl.useProgram(prog);
+      const u = (name) => gl.getUniformLocation(prog, name);
+
+      const tex = gl.createTexture();
+      gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+      // The browser fires `paint` whenever the card's rendering changes; copy its latest snapshot into the texture.
+      canvas.addEventListener('paint', () => {
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        // Some builds take texImage2D's long argument list instead.
+        if (gl.texElementImage2D.length === 3) gl.texElementImage2D(gl.TEXTURE_2D, gl.RGBA8, card);
+        else gl.texElementImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, card);
+      });
+
+      const PAD = 20;
+      let x = 0, y = 0;
+      function layout() {
+        const dpr = devicePixelRatio;
+        canvas.width = Math.round(canvas.clientWidth * dpr);
+        canvas.height = Math.round(canvas.clientHeight * dpr);
+        x = Math.round((canvas.clientWidth - card.offsetWidth) / 2);
+        y = Math.round((canvas.clientHeight - card.offsetHeight) / 2);
+        // Tell the browser where the card is drawn so clicks and focus land on it.
+        canvas.updateElementGeometry?.(card, { canvasTransform: new DOMMatrix().scale(dpr).translate(x, y) });
+        card.style.transform = `translate(${x}px, ${y}px)`;
+        canvas.requestPaint();
+      }
+
+      function frame(t) {
+        requestAnimationFrame(frame);
+        const dpr = devicePixelRatio, w = card.offsetWidth, h = card.offsetHeight;
+        gl.clear(gl.COLOR_BUFFER_BIT);
+        // Draw only over the card plus padding; GL's y axis points up.
+        gl.viewport((x - PAD) * dpr, canvas.height - (y + h + PAD) * dpr, (w + 2 * PAD) * dpr, (h + 2 * PAD) * dpr);
+        gl.uniform2f(u('size'), w, h);
+        gl.uniform1f(u('pad'), PAD);
+        gl.uniform1f(u('time'), t / 1000);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+      }
+
+      addEventListener('resize', layout);
+      layout();
+      requestAnimationFrame(frame);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+blender/
+*.blend
+*.blend1
+public/lightmaps-quick/

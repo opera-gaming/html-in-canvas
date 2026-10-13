@@ -1,0 +1,170 @@
+/* Copyright 2026, Opera Norway AS
+   SPDX-License-Identifier: Apache-2.0 */
+
+/* :where keeps these defaults weaker than each page's own :root, which loads earlier. */
+:where(:root) {
+  --bg: #0c0a0a;
+  --text: #f4efe9;
+  --dim: #b9aea4;
+  --accent: #ff5a1f;
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}
+#view {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: block;
+}
+
+.back {
+  position: fixed;
+  left: 16px;
+  top: 14px;
+  z-index: 2;
+  color: var(--dim);
+  text-decoration: none;
+  font-size: 14px;
+}
+.back:hover {
+  color: var(--text);
+}
+
+#unsupported {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  text-align: center;
+  background: var(--bg);
+  font-size: 16px;
+  line-height: 1.5;
+}
+#unsupported[hidden] {
+  display: none;
+}
+#unsupported code {
+  background: #2a2320;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+/* Solid track and round thumb, for a clean silhouette in the SDF. */
+input[type='range'] {
+  height: 28px;
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+input[type='range']::-webkit-slider-runnable-track {
+  height: 10px;
+  border-radius: 5px;
+  background: var(--text);
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 4px solid var(--text);
+  box-sizing: border-box;
+}
+input[type='range']:focus-visible {
+  outline: none;
+}
+input[type='range']:focus-visible::-webkit-slider-thumb {
+  border-color: #ffd27a;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 92px 1fr 52px;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+.field-row label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dim);
+}
+.field-row output {
+  text-align: right;
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px 8px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #24201f;
+  color: var(--text);
+  font: 600 16px var(--font);
+  cursor: pointer;
+}
+.pill .knob-track {
+  position: relative;
+  width: 56px;
+  height: 32px;
+  border-radius: 999px;
+  background: #3b3533;
+  transition: background 0.2s;
+}
+.pill .knob-track::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 4px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--text);
+  transition: transform 0.2s;
+}
+.pill[aria-checked='true'] .knob-track {
+  background: var(--accent);
+}
+.pill[aria-checked='true'] .knob-track::after {
+  transform: translateX(24px);
+}
+.pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+input[type='color'] {
+  width: 44px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  cursor: pointer;
+}
+input[type='color']::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type='color']::-webkit-color-swatch {
+  border: 3px solid var(--text);
+  border-radius: 8px;
+}
