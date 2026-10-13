@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Frosty Checkboxes</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="%VITE_SITE_BASE%favicon.svg" type="image/svg+xml" />
     <style>
       :root { --bg: #060a12; --text: #eef6ff; --dim: #8fa6bf; --accent: #9fdcff; }
       #panel { box-sizing: border-box; width: 460px; display: flex; flex-direction: column; gap: 6px; }
@@ -59,7 +59,7 @@
       <div class="field-row"><label for="sheen">Sheen</label><input id="sheen" type="range" min="0" max="2.5" step="0.05" value="2.5" /><output for="sheen"></output></div>
       <button type="button" id="reset">Reset</button>
     </aside>
-    <a class="back" href="/">← All demos</a>
+    <a class="back" href="%VITE_SITE_BASE%">← All demos</a>
     <script type="module" src="/src/frost.ts"></script>
   </body>
 </html>

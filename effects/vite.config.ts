@@ -6,6 +6,8 @@ import { defineConfig } from 'vite';
 
 const pages = ['fire', 'teleport', 'endgame', 'electric', 'transitions', 'post', 'frost'];
 
+process.env.VITE_SITE_BASE ??= '/';
+
 export default defineConfig({
   resolve: { alias: { '@kit': resolve(import.meta.dirname, '../kit') } },
   server: { port: 5181, strictPort: true, fs: { allow: [resolve(import.meta.dirname, '..')] } },

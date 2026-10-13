@@ -2,23 +2,25 @@
 # Copyright 2026, Opera Norway AS
 # SPDX-License-Identifier: Apache-2.0
 #
-# Assemble the demos into one static site in ./public (Vercel's output dir):
+# Assemble the demos into ./public, served under /html-in-canvas/:
 #   /        landing page (site/index.html)
-#   /room/   gamer-room page; its assets stay at the root because the room loads /models, /replicas, ... absolutely
-#   /dozer/  dozer, built with base /dozer/
+#   /room/   gamer-room page; its assets stay at the site base
+#   /dozer/  dozer
 #   /fire/, /teleport/, /endgame/, /electric/, /transitions/, /post/, /frost/   the effects pages (one Vite project, effects/)
-#   /ninja/  HTML Ninja, built with base /ninja/
+#   /ninja/  HTML Ninja
 #   /hello/  the minimal example (hello/index.html, no build)
 #   /licenses/  third-party notices (site/licenses.html)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-(cd dozer && npm ci && npx tsc --noEmit && npx vite build --base /dozer/)
+export VITE_SITE_BASE=/html-in-canvas/
+
+(cd dozer && npm ci && npm run build -- --base "${VITE_SITE_BASE}dozer/")
 # The room's arcade screen embeds its own build of the dozer.
-(cd dozer && npx vite build --base /replicas/dozer/ --outDir ../gamer-room/public/replicas/dozer --emptyOutDir)
-(cd gamer-room && npm ci && npm run build)
-(cd effects && npm ci && npm run build)
-(cd ninja && npm ci && npx tsc --noEmit && npx vite build --base /ninja/)
+(cd dozer && npx vite build --base "${VITE_SITE_BASE}replicas/dozer/" --outDir ../gamer-room/public/replicas/dozer --emptyOutDir)
+(cd gamer-room && npm ci && npm run build -- --base "$VITE_SITE_BASE")
+(cd effects && npm ci && npm run build -- --base "$VITE_SITE_BASE")
+(cd ninja && npm ci && npm run build -- --base "${VITE_SITE_BASE}ninja/")
 
 rm -rf public
 cp -R gamer-room/dist public

@@ -4,5 +4,7 @@
   "installCommand": "true",
   "buildCommand": "bash tools/build-site.sh",
   "outputDirectory": "public",
-  "trailingSlash": true
+  "trailingSlash": true,
+  "redirects": [{ "source": "/", "destination": "/html-in-canvas/", "permanent": false }],
+  "rewrites": [{ "source": "/html-in-canvas/:path*", "destination": "/:path*" }]
 }

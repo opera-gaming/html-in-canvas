@@ -53,7 +53,7 @@ async function boot() {
     cameraConfig.far,
   );
 
-  const room = await loadRoom('/models/room.glb');
+  const room = await loadRoom(`${import.meta.env.BASE_URL}models/room.glb`);
   scene.add(room.scene);
   scene.add(
     new HemisphereLight(
@@ -63,7 +63,10 @@ async function boot() {
     ),
   );
   const emissiveHueFx = createEmissiveHue(room.scene, emissiveHue);
-  const dyn = createDynamicLights(await loadDynamicLights('/models/lights.json'), lightScale);
+  const dyn = createDynamicLights(
+    await loadDynamicLights(`${import.meta.env.BASE_URL}models/lights.json`),
+    lightScale,
+  );
   dyn.applyOverrides(lightOverrides);
   if (dyn.lights.length) scene.add(...dyn.lights);
 

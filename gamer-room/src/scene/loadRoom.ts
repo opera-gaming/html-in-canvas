@@ -96,7 +96,7 @@ export async function loadRoom(url: string): Promise<Room> {
     const overridden = applyMaterialOverrides(scene, materialOverrides);
     if (overridden.length) console.info('[room] material overrides:', overridden.join(', '));
     try {
-      const lm = await loadLightmaps('/lightmaps');
+      const lm = await loadLightmaps(`${import.meta.env.BASE_URL}lightmaps`);
       lightmapped = Object.keys(lm.manifest).length > 0;
       const applied = applyLightmaps(scene, lm.manifest, lm.textures);
       if (applied.length) console.info('[room] lightmaps:', applied.join(', '));

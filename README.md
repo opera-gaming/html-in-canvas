@@ -13,7 +13,8 @@ browser with `chrome://flags/#canvas-draw-element` enabled.
 New to the API? Start with [hello/index.html](hello/index.html): one file, about 140 lines, no build.
 
 Run `npm install` and `npm run dev` inside a project folder. `kit/` holds code shared by `effects` and `ninja`.
-`tools/build-site.sh` builds every demo, plus the landing page in `site/`, into one static site in `public/`.
+`tools/build-site.sh` builds every demo, plus the landing page in `site/`, into one static site in `public/`,
+with production URLs under `/html-in-canvas/` (for example, `/html-in-canvas/dozer/`).
 
 ## Setup
 
@@ -22,8 +23,9 @@ Run `npm install` and `npm run dev` inside a project folder. `kit/` holds code s
 - Node.js 20.19+ or 22.12+ with npm (Vite 8's minimum; developed on Node 25). Each project has its own
   `package.json`; there is no root install.
 - Deploy: Vercel runs `bash tools/build-site.sh` (see `vercel.json`), which installs and builds every project, including
-  the dozer copy for the room's arcade screen, and serves the assembled `public/`. Run the same script locally to
-  preview the full site.
+  the dozer copy for the room's arcade screen, and mounts the assembled `public/` at `/html-in-canvas/`. The domain
+  root redirects there. Other static hosts must mount `public/` at the same prefix; for a local full-site preview,
+  run the build script and serve `public/` under `/html-in-canvas/`, not at the server root.
 
 ## License
 

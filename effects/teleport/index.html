@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Teleport</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="%VITE_SITE_BASE%favicon.svg" type="image/svg+xml" />
     <style>
       :root { --bg: #08090d; --dim: #a7adbd; --accent: #38c6ff; }
       /* Ordinary DOM, not drawn through the effect. */
@@ -68,7 +68,7 @@
       <p>The panel below is live HTML. Flip the switch to teleport it out and back.</p>
       <button id="toggle" class="pill" role="switch" aria-checked="true"><span class="knob-track"></span>Panel</button>
     </div>
-    <a class="back" href="/">← All demos</a>
+    <a class="back" href="%VITE_SITE_BASE%">← All demos</a>
     <script type="module" src="/src/teleport.ts"></script>
   </body>
 </html>

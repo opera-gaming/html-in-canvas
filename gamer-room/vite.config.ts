@@ -3,6 +3,8 @@
 
 import { defineConfig } from 'vite';
 
+process.env.VITE_SITE_BASE ??= '/';
+
 export default defineConfig({
   server: { port: 5173 },
   // No SPA fallback: a missing screen page must 404 (not serve the room) so ScreenSurface shows its fallback page.

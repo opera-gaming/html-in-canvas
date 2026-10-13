@@ -4,6 +4,8 @@
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';
 
+process.env.VITE_SITE_BASE ??= '/';
+
 export default defineConfig({
   resolve: { alias: { '@kit': resolve(import.meta.dirname, '../kit') } },
   server: { port: 5182, strictPort: true, fs: { allow: [resolve(import.meta.dirname, '..')] } },

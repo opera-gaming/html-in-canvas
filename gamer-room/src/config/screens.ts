@@ -16,7 +16,7 @@ export interface ScreenDef {
  * `?content=` override gets the mirror too. Build the dozer into public/replicas/dozer to show it on a screen.
  */
 const mirroredCanvases: Record<string, string> = {
-  '/replicas/dozer/': 'canvas#view',
+  [`${import.meta.env.BASE_URL}replicas/dozer/`]: 'canvas#view',
 };
 
 export function mirrorCanvasFor(src: string): string | undefined {
@@ -28,17 +28,17 @@ export function mirrorCanvasFor(src: string): string | undefined {
 export const screens: Record<string, ScreenDef> = {
   // A build of ../dozer (see the README). The monitors' pages are not in the repo (third-party content): make local
   // copies with tools/snapshot-site.mjs, or the screens fall back to defaultScreen.
-  arcade: { width: 960, height: 540, src: '/replicas/dozer/index.html' },
-  monl: { width: 1280, height: 720, src: '/replicas/gxcorner/index.html' },
+  arcade: { width: 960, height: 540, src: `${import.meta.env.BASE_URL}replicas/dozer/index.html` },
+  monl: { width: 1280, height: 720, src: `${import.meta.env.BASE_URL}replicas/gxcorner/index.html` },
   monr: {
     width: 1680,
     height: 720,
-    src: '/replicas/gx/index.html',
+    src: `${import.meta.env.BASE_URL}replicas/gx/index.html`,
     hostOverrides: { 'www.opera.com': 'https://www.opera.com/gx' },
   },
 };
 
-export const defaultScreen: ScreenDef = { src: '/replicas/default/index.html' };
+export const defaultScreen: ScreenDef = { src: `${import.meta.env.BASE_URL}replicas/default/index.html` };
 
 const MESH_RE = /^screen_([a-z0-9]+)(?:\.\d+)?$/i;
 

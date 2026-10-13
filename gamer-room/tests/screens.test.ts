@@ -1,7 +1,7 @@
 // Copyright 2026, Opera Norway AS
 // SPDX-License-Identifier: Apache-2.0
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   screenIdFromMeshName,
   getScreenDef,
@@ -66,6 +66,27 @@ describe('resolveSrc', () => {
       '/replicas/opera/index.html',
     );
   });
+});
+
+it('keeps screen, fallback and music URLs under the production base', async () => {
+  vi.stubEnv('BASE_URL', '/html-in-canvas/');
+  vi.resetModules();
+  try {
+    const { screens, defaultScreen, mirrorCanvasFor, resolveSrc } = await import('../src/config/screens');
+    const { musicSrc } = await import('../src/config/audio');
+    for (const def of [...Object.values(screens), defaultScreen]) {
+      expect(def.src).toMatch(/^\/html-in-canvas\/replicas\//);
+    }
+    const arcade = resolveSrc(screens.arcade!, 'localhost', '', 'arcade');
+    expect(arcade).toBe('/html-in-canvas/replicas/dozer/index.html');
+    expect(mirrorCanvasFor(arcade)).toBe('canvas#view');
+    expect(mirrorCanvasFor(`https://example.com${arcade}?x=1`)).toBe('canvas#view');
+    expect(mirrorCanvasFor('/html-in-canvas/replicas/dozerish/index.html')).toBeUndefined();
+    expect(musicSrc).toBe('/html-in-canvas/audio/1000 Handz - Statik.mp3');
+  } finally {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  }
 });
 
 describe('defaultPixelSize', () => {
