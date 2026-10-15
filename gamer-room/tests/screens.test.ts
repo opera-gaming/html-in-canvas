@@ -75,7 +75,7 @@ it('keeps screen, fallback and music URLs under the production base', async () =
     const { screens, defaultScreen, mirrorCanvasFor, resolveSrc } = await import('../src/config/screens');
     const { musicSrc } = await import('../src/config/audio');
     for (const def of [...Object.values(screens), defaultScreen]) {
-      expect(def.src).toMatch(/^\/html-in-canvas\/replicas\//);
+      expect(def.src).toMatch(/^\/html-in-canvas\/(replicas|pages)\//);
     }
     const arcade = resolveSrc(screens.arcade!, 'localhost', '', 'arcade');
     expect(arcade).toBe('/html-in-canvas/replicas/dozer/index.html');

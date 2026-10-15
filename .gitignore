@@ -6,6 +6,7 @@ dist/
 .env*
 # Built from ../dozer by tools/build-site.sh (see gamer-room/README.md)
 /gamer-room/public/replicas/dozer/
-# Snapshots of opera.com/gx and GX Corner (third-party content); made locally with gamer-room/tools/snapshot-site.mjs
+# Screen pages, deployed from a separate repo (see gamer-room/README.md); local copies and old snapshots
+/gamer-room/public/pages
 /gamer-room/public/replicas/gx/
 /gamer-room/public/replicas/gxcorner/

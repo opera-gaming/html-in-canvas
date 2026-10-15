@@ -26,16 +26,12 @@ export function mirrorCanvasFor(src: string): string | undefined {
 }
 
 export const screens: Record<string, ScreenDef> = {
-  // A build of ../dozer (see the README). The monitors' pages are not in the repo (third-party content): make local
-  // copies with tools/snapshot-site.mjs, or the screens fall back to defaultScreen.
+  // A build of ../dozer (see the README).
   arcade: { width: 960, height: 540, src: `${import.meta.env.BASE_URL}replicas/dozer/index.html` },
-  monl: { width: 1280, height: 720, src: `${import.meta.env.BASE_URL}replicas/gxcorner/index.html` },
-  monr: {
-    width: 1680,
-    height: 720,
-    src: `${import.meta.env.BASE_URL}replicas/gx/index.html`,
-    hostOverrides: { 'www.opera.com': 'https://www.opera.com/gx' },
-  },
+  // The monitors show pages from the separate html-in-canvas-pages repo, deployed next to the site under pages/ (not
+  // in this repo); without them they fall back to defaultScreen.
+  monl: { width: 1280, height: 720, src: `${import.meta.env.BASE_URL}pages/page-1/index.html` },
+  monr: { width: 1680, height: 720, src: `${import.meta.env.BASE_URL}pages/page-2/index.html` },
 };
 
 export const defaultScreen: ScreenDef = { src: `${import.meta.env.BASE_URL}replicas/default/index.html` };

@@ -21,7 +21,7 @@ default page until built). Build it once, and again after changing the dozer:
 `npm run bake:blender` (`tools/bake.py`) and `npm run export:blender` (`tools/export.py`, configured by
 `tools/export_config.json`). `public/replicas/dozer` is a build of `../dozer` (see Run).
 
-The two monitors show `/replicas/gxcorner/` and `/replicas/gx/`. Those pages are not in the repo: they are copies of
-third-party sites, so make your own with `tools/snapshot-site.mjs` (`--gx` for GX Corner) or point the screens at
-same-origin pages of your own in `src/config/screens.ts`. A screen whose page is missing shows
-`public/replicas/default/`.
+The two monitors show `pages/page-1/` and `pages/page-2/` (see `src/config/screens.ts`). Those pages are not in this repo: the deploy serves them from a separate repo next to the
+site. To see them locally, put them in `public/pages/` (ignored by git), for example as a symlink to a checkout's
+`pages/` folder. A screen whose page is missing shows `public/replicas/default/`. `tools/snapshot-site.mjs` saves a
+static, same-origin copy of a live page for a screen.
