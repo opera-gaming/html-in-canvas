@@ -18,8 +18,6 @@ with production URLs under `/html-in-canvas/` (for example, `/html-in-canvas/doz
 
 ## Setup
 
-- Git LFS: the 3D models (`*.glb`) are stored in LFS. Run `git lfs install` once before cloning, or `git lfs pull`
-  after a clone that only got pointer files.
 - Node.js 20.19+ or 22.12+ with npm (Vite 8's minimum; developed on Node 25). Each project has its own
   `package.json`; there is no root install.
 - Deploy: Vercel runs `bash tools/build-site.sh` (see `vercel.json`), which installs and builds every project, including
