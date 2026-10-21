@@ -10,6 +10,9 @@ dist/
 /gamer-room/public/pages
 /gamer-room/public/replicas/gx/
 /gamer-room/public/replicas/gxcorner/
+# Free web fonts (Inter Tight, Roboto Mono) are tracked; the commercial Söhne webfonts
+# are never committed — they must not be reintroduced by tools/opera-hf/update.sh.
+/site/opera-hf/fonts/soehne/
 .idea/
 .pi
 .playwright-mcp
