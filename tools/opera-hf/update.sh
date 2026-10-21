@@ -60,8 +60,15 @@ cp "$NEXT/src/ts/components/TabscapeWheel/TabscapeWheel.ts" \
   tools/opera-hf/wheel/TabscapeWheel.ts \
   tools/opera-hf/wheel/WheelGeometry.ts \
   tools/opera-hf/wheel/tabscape-wheel.ts
-sed -i '' -e "s|from './WheelGeometry'|from './WheelGeometry.js'|g" \
-          -e "s|from './TabscapeWheel'|from './TabscapeWheel.js'|g" "$OUT/wheel"/*.js
+# tsc does not rewrite import specifiers, so the extensionless './X' imports
+# need '.js' appended. Use a temp file + mv (not `sed -i`): `-i ''` is
+# BSD/macOS-only and silently fails on GNU sed (Linux CI), leaving the rewrite
+# undone.
+for f in "$OUT/wheel"/*.js; do
+  sed -e "s|from './WheelGeometry'|from './WheelGeometry.js'|g" \
+      -e "s|from './TabscapeWheel'|from './TabscapeWheel.js'|g" "$f" > "$f.tmp" &&
+    mv -f "$f.tmp" "$f"
+done
 
 rm -f /tmp/hic-hf-export.css /tmp/hic-hf-export.html
 echo "✓ site/opera-hf/ regenerated from $NEXT"
