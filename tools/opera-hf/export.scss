@@ -1,13 +1,6 @@
-// Export entry — compiles ONLY the Opera header/footer styles from the next
-// repo SCSS into the self-contained site/opera-hf/header-footer.css.
-//
-// Deliberately scoped so it does NOT restyle the dark html-in-canvas landing
-// page: the global base typography (body, h1-h6, a, p, .section-component) is
-// omitted; only the reset bits the header/footer rely on are emitted (62.5%
-// html root, * box-sizing, img/ul/ol, .wrapper/.container-fluid). Design-system
-// tokens reach the header/footer via the `next-theme` class they carry.
-//
-// Run through tools/opera-hf/update.sh with: sass --load-path=<next>/src/scss
+// Compiles only the Opera header/footer styles (from the next repo SCSS) into
+// site/opera-hf/header-footer.css. Scoped so it doesn't restyle the dark landing
+// page. Run via tools/opera-hf/update.sh.
 $images-path: '/html-in-canvas/opera-hf/images';
 
 @import 'design-system/theme-variables';
@@ -20,9 +13,8 @@ $images-path: '/html-in-canvas/opera-hf/images';
 @import 'opera-hf/breadcrumbs';
 @import 'design-system/tabscape-wheel/tabscape-wheel.module';
 
-// ─── Minimal global bits the header/footer need (subset of base/base.scss) ──
-// 62.5% root (1rem = 10px, scaling above 1366px) — the rem values in the
-// header/footer SCSS are written against this root.
+// Minimal globals the header/footer need (subset of base/base.scss).
+// 62.5% root: the header/footer rem values are written against 1rem = 10px.
 html {
   font-size: 62.5%;
   scroll-behavior: smooth;
@@ -69,27 +61,26 @@ ol {
   }
 }
 
-// The design-system tokens (via .next-theme) and Söhne font apply to the
-// header/footer containers, not the page body.
+// Design-system tokens (via .next-theme) and Söhne apply to the header/footer
+// containers only, not the page body.
 .next-header,
 .footer-wrap {
   font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
 }
 
-// The landing page is permanently dark, so the header always wears the dark
-// theme. In the next repo dark is gated behind @media (prefers-color-scheme:
-// dark); here we force it unconditionally (higher specificity than .next-theme,
-// so it wins over both its light default and the media-query dark block).
+// Page is always dark → force dark tokens on the header (next gates dark behind
+// prefers-color-scheme); higher specificity than .next-theme wins.
 .next-header.next-theme {
   @include opera-2026-dark-theme-variables;
+
+  // Match the page background (--bg from site/index.html) — no visible seam.
+  --bg-primary: var(--bg, #{$opera-2026-near-black});
 }
 
-// ─── Footer: dark background with dark-theme CSS variable overrides ─────────
-// Mirrors opera.com footer in opera-2026-light-theme (always dark). Copied from
-// src/scss/main.scss of the next repo.
+// ─── Footer: always-dark overrides (mirrors main.scss .footer-wrap) ──────────
 .footer-wrap {
-  background-color: $opera-2026-near-black;
+  background-color: var(--bg, #{$opera-2026-near-black});
   padding: $gap-xl 0;
 
   --text-primary: #{$opera-2026-offwhite};
@@ -100,7 +91,8 @@ ol {
   --border-bw-15: rgba(255, 254, 247, 0.15);
   --border-bw-50: rgba(255, 254, 247, 0.5);
   --surface-primary: #{$opera-2026-dark-1};
-  --bg-primary: #{$opera-2026-near-black};
+  // Match the page background (see .next-header comment).
+  --bg-primary: var(--bg, #{$opera-2026-near-black});
   --text-primary-reversed: #{$opera-2026-offwhite};
   --lang-selector-arrow-down: url(#{$images-path}/svg/arrow-down--new-dark.svg);
   --lang-selector-arrow-up: url(#{$images-path}/svg/arrow-down-white--new.svg);
@@ -119,7 +111,7 @@ ol {
   }
 }
 
-// Cookie consent withdraw link (footer Legal column) — .hf__link:hover handles colors
+// Cookie-consent withdraw link — .hf__link:hover handles colors
 .cookie_withdraw.block--clickable {
   display: block;
   cursor: pointer;

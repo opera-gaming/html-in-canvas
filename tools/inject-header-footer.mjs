@@ -1,15 +1,9 @@
 #!/usr/bin/env node
-// Inject the shared Opera header/footer (site/opera-hf/header-footer.html) into
-// a built page that carries <!-- opera-header --> / <!-- opera-footer --> markers.
-//
-// The fragment is the exact markup from the next.opera.com repo (regenerated via
-// tools/opera-hf/update.sh). It contains a <header class="next-header">…</header>
-// followed by the footer inner content (breadcrumbs, columns, tabscape wheel) —
-// this script adds the design-system `next-theme` class and wraps the footer in
-// the <footer class="footer-wrap"><div class="wrapper container-fluid"> shell,
-// mirroring base.njk of the next repo.
-//
-// Usage: node tools/inject-header-footer.mjs <fragment.html> <output.html>
+// Splice the shared Opera header/footer (site/opera-hf/header-footer.html) into a
+// built page at its <!-- opera-header --> / <!-- opera-footer --> markers: adds
+// the `next-theme` class to the header and wraps the footer in the footer-wrap
+// shell (mirrors base.njk of the next repo).
+// Usage: node tools/inject-header-footer.mjs [fragment] [output]
 import { readFileSync, writeFileSync } from 'node:fs'
 
 const [, , fragmentPath = 'site/opera-hf/header-footer.html', outputPath = 'public/index.html'] =

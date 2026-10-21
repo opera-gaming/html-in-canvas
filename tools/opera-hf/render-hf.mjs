@@ -1,6 +1,4 @@
-// Render the opera header + footer macros from the next repo to a static HTML
-// fragment (the exact markup used on next.opera.com).
-//
+// Render next.opera.com header/footer macros to a static fragment.
 // Usage: node tools/opera-hf/render-hf.mjs <next-repo-path>
 import { pathToFileURL } from 'node:url'
 import { join } from 'node:path'
@@ -13,18 +11,20 @@ const env = new nunjucks.Environment(
 )
 env.autoescape = false
 
+// Breadcrumb: this landing page is the html-in-canvas section of next.opera.com,
+// so “Next” links to the root (/) and the section is the current-page text.
 const src = `
 {% from "components/opera-header.njk" import opera_header_component %}
 {% from "components/opera-footer.njk" import opera_footer_component %}
 {{ opera_header_component() }}
-{{ opera_footer_component() }}
+{{ opera_footer_component(crumbs=[
+    { label: 'HTML-in-Canvas', url: null }
+]) }}
 `
 
 let html = env.renderString(src)
 
-// The landing page is permanently dark, so the header always uses the white
-// (darkmode) logo. The next macro switches it via <picture>/prefers-color-scheme;
-// here we collapse that to a plain <img> with the darkmode SVG every time.
+// Page is always dark → always use the white (darkmode) logo.
 html = html.replace(/<picture>[\s\S]*?<\/picture>/g, (m) => {
   const img = m.match(/<img[\s\S]*?>/)
   if (!img) return m
@@ -34,20 +34,17 @@ html = html.replace(/<picture>[\s\S]*?<\/picture>/g, (m) => {
   )
 })
 
-// This repo has no cookie-consent implementation (CookieConsent.ts/GTM live in
-// the next repo), so the “Cookie Consent” withdraw link in the footer would do
-// nothing — drop it. NB: don't wrap the removed markup in an HTML comment, its
-// `block--clickable` class breaks out of a comment via the "--" sequence.
+// Drop the "Cookie Consent" withdraw link — no cookie-consent here. Don't wrap
+// the removed markup in an HTML comment: `block--clickable` contains `--`.
 html = html.replace(
   /(\s*<li>\s*<span class="hf__link cookie_withdraw block--clickable">[\s\S]*?<\/span>\s*<\/li>)/g,
-  '<!-- Cookie Consent withdraw link disabled: html-in-canvas has no cookie-consent implementation -->',
+  '<!-- Cookie Consent link removed: no cookie-consent implementation here -->',
 )
 
-// The language selector is being removed from next.opera.com (no i18n on this
-// site either) — drop the footer__lang-box block while keeping a breadcrumb.
+// Drop the language selector (removed from next.opera.com; no i18n here).
 html = html.replace(
   /(\s*<div class="footer__lang-box">[\s\S]*?<\/div>)/g,
-  '<!-- Language selector removed: dropped from next.opera.com, this site has no i18n -->',
+  '<!-- Language selector removed: no i18n here -->',
 )
 
 process.stdout.write(html)

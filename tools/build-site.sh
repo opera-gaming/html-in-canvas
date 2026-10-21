@@ -36,5 +36,5 @@ mkdir -p public/licenses
 cp site/licenses.html public/licenses/index.html
 cp -R site/media public/media
 cp -R site/opera-hf public/opera-hf
-# Landing page ships the shared Opera header/footer (site/opera-hf/).
+# Landing page ships the shared Opera header/footer.
 node tools/inject-header-footer.mjs site/opera-hf/header-footer.html public/index.html
