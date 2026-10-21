@@ -1,12 +1,8 @@
 #!/usr/bin/env node
-// Local preview server for the assembled full site (output of tools/build-site.sh).
-//
-// The production build bakes "/html-in-canvas/..." into every internal link
-// (VITE_SITE_BASE), so `public/` must be served under that prefix, not at the
-// server root. Vercel does this for the deployed site; this script does it locally.
-//
-// Usage:  node tools/serve.mjs            # → http://localhost:4173/html-in-canvas/
-//         node tools/serve.mjs 8080       # custom port
+// Local preview for the built site (tools/build-site.sh → public/). Internal
+// links carry an "/html-in-canvas/..." prefix, so public/ is served under it,
+// mirroring the Vercel deployment.
+// Usage: node tools/serve.mjs [port]   → http://localhost:4173/html-in-canvas/
 import http from 'node:http'
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { dirname, extname, join, normalize } from 'node:path'

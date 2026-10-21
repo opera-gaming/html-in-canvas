@@ -1,9 +1,5 @@
-// Boot entry for the animated Tabscape wheel on the static html-in-canvas
-// landing page. Mirrors `initTabscapeWheel()` in src/ts/main.ts of the next
-// repo: lazy-load the wheel module once a [data-tabscape-wheel] element is
-// near the viewport, unless the user opted into reduced motion. The
-// TabscapeWheel class itself also refuses to boot for reduced motion and for
-// touch devices ((hover: none)) — on those the static SVG layer stays visible.
+// Lazy-mount the animated Tabscape wheel once a [data-tabscape-wheel] element is
+// near the viewport (unless reduced motion); mirrors initTabscapeWheel() in next.
 import { mountTabscapeWheel } from './TabscapeWheel.js';
 function boot() {
     const components = Array.from(document.querySelectorAll('[data-tabscape-wheel]'));
