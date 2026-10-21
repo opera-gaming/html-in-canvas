@@ -24,3 +24,10 @@ Bundled in the built gaming room
 - postprocessing (Zlib), Copyright © 2015 Raoul van Rüschen
 - N8AO (CC0 1.0, public domain)
 
+Web fonts (SIL Open Font License 1.1, https://openfontlicense.org), site/opera-hf/fonts/
+- Inter Tight, Copyright 2022 The Inter Project Authors, https://github.com/rsms/inter-tight
+- Roboto Mono, Copyright 2015 The Roboto Mono Project Authors, https://github.com/googlefonts/robotomono
+  Bundled as woff2 under the SIL Open Font License 1.1; license texts in the font
+  directories (site/opera-hf/fonts/inter-tight/LICENSE, site/opera-hf/fonts/roboto-mono/LICENSE)
+  and in site/licenses.html.
+
