@@ -50,7 +50,11 @@ http
       res.end('404 Not Found: ' + req.url)
       return
     }
-    res.writeHead(200, { 'Content-Type': MIME[extname(abs)] || 'application/octet-stream' })
+    res.writeHead(200, {
+      'Content-Type': MIME[extname(abs)] || 'application/octet-stream',
+      // Dev server: never cache, so edits show up on plain refresh.
+      'Cache-Control': 'no-store',
+    })
     createReadStream(abs).pipe(res)
   })
   .listen(PORT, () => console.log(`html-in-canvas preview @ http://localhost:${PORT}/html-in-canvas/`))
