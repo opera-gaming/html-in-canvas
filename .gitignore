@@ -10,3 +10,6 @@ dist/
 /gamer-room/public/pages
 /gamer-room/public/replicas/gx/
 /gamer-room/public/replicas/gxcorner/
+.idea/
+.pi
+.playwright-mcp
