@@ -1,0 +1,126 @@
+// Export entry — compiles ONLY the Opera header/footer styles from the next
+// repo SCSS into the self-contained site/opera-hf/header-footer.css.
+//
+// Deliberately scoped so it does NOT restyle the dark html-in-canvas landing
+// page: the global base typography (body, h1-h6, a, p, .section-component) is
+// omitted; only the reset bits the header/footer rely on are emitted (62.5%
+// html root, * box-sizing, img/ul/ol, .wrapper/.container-fluid). Design-system
+// tokens reach the header/footer via the `next-theme` class they carry.
+//
+// Run through tools/opera-hf/update.sh with: sass --load-path=<next>/src/scss
+$images-path: '/html-in-canvas/opera-hf/images';
+
+@import 'design-system/theme-variables';
+@import 'base/fonts';
+@import 'utils/spacing';
+@import 'utils/layout';
+@import 'design-system/opera-header/opera-header.module';
+@import 'opera-hf/footer';
+@import 'opera-hf/hf';
+@import 'opera-hf/breadcrumbs';
+@import 'design-system/tabscape-wheel/tabscape-wheel.module';
+
+// ─── Minimal global bits the header/footer need (subset of base/base.scss) ──
+// 62.5% root (1rem = 10px, scaling above 1366px) — the rem values in the
+// header/footer SCSS are written against this root.
+html {
+  font-size: 62.5%;
+  scroll-behavior: smooth;
+
+  @media (min-width: 1366px) {
+    font-size: calc(62.5% + 0.2vw);
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+img,
+picture {
+  display: block;
+  max-width: 100%;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+.wrapper {
+  width: 100%;
+}
+
+.container-fluid {
+  max-width: $container-width;
+  margin: 0 auto;
+  padding: 0 $gap-lg;
+
+  @include bp-md {
+    padding: 0 $gap-xl;
+  }
+
+  @include bp-xl {
+    padding: 0 10rem;
+  }
+}
+
+// The design-system tokens (via .next-theme) and Söhne font apply to the
+// header/footer containers, not the page body.
+.next-header,
+.footer-wrap {
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+// The landing page is permanently dark, so the header always wears the dark
+// theme. In the next repo dark is gated behind @media (prefers-color-scheme:
+// dark); here we force it unconditionally (higher specificity than .next-theme,
+// so it wins over both its light default and the media-query dark block).
+.next-header.next-theme {
+  @include opera-2026-dark-theme-variables;
+}
+
+// ─── Footer: dark background with dark-theme CSS variable overrides ─────────
+// Mirrors opera.com footer in opera-2026-light-theme (always dark). Copied from
+// src/scss/main.scss of the next repo.
+.footer-wrap {
+  background-color: $opera-2026-near-black;
+  padding: $gap-xl 0;
+
+  --text-primary: #{$opera-2026-offwhite};
+  --text-primary-as-filter: #{$white-100-as-filter};
+  --text-secondary: #{$opera-2026-gray-1};
+  --text-brand: #{$opera-2026-offwhite};
+  --border-primary: #{$opera-2026-border-2};
+  --border-bw-15: rgba(255, 254, 247, 0.15);
+  --border-bw-50: rgba(255, 254, 247, 0.5);
+  --surface-primary: #{$opera-2026-dark-1};
+  --bg-primary: #{$opera-2026-near-black};
+  --text-primary-reversed: #{$opera-2026-offwhite};
+  --lang-selector-arrow-down: url(#{$images-path}/svg/arrow-down--new-dark.svg);
+  --lang-selector-arrow-up: url(#{$images-path}/svg/arrow-down-white--new.svg);
+
+  .hf__heading {
+    font-family: var(--font-family);
+    font-weight: $font-weight-kraftig;
+  }
+
+  // Show footer columns — override mobile accordion collapse
+  .hf__dd-content {
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    transform: none !important;
+  }
+}
+
+// Cookie consent withdraw link (footer Legal column) — .hf__link:hover handles colors
+.cookie_withdraw.block--clickable {
+  display: block;
+  cursor: pointer;
+}

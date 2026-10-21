@@ -24,6 +24,13 @@ with production URLs under `/html-in-canvas/` (for example, `/html-in-canvas/doz
   the dozer copy for the room's arcade screen, and mounts the assembled `public/` at `/html-in-canvas/`. The domain
   root redirects there. Other static hosts must mount `public/` at the same prefix; for a local full-site preview,
   run the build script and serve `public/` under `/html-in-canvas/`, not at the server root.
+- 
+### Local full-site preview
+
+```bash
+bash tools/build-site.sh         # npm ci + build of every project → public/
+node tools/serve.mjs            # → http://localhost:4173/html-in-canvas/
+```
 
 ## License
 
