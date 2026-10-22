@@ -1,12 +1,25 @@
 <!doctype html>
 <!-- Copyright 2026, Opera Norway AS -->
 <!-- SPDX-License-Identifier: Apache-2.0 -->
-<html lang="en">
+<html lang="en" data-consent-theme="dark">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>HTML-in-Canvas Demos</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <!-- Google Consent Mode + cookie consent. The inline snippet sets `consent default: denied` before anything
+         else, so it holds even if the bundle is missing; keep it identical to the "Consent bundle" section of the
+         next.opera.com repo README. The bundle (published by next.opera.com, same origin) adds GTM, the popup and
+         the Cookie Consent link behaviour; it 404s harmlessly elsewhere (forks, local, previews). -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent','default',{
+        ad_storage:'denied',ad_user_data:'denied',
+        ad_personalization:'denied',analytics_storage:'denied'
+      });
+    </script>
+    <script defer src="/assets/consent/v1/consent.js"></script>
     <link rel="stylesheet" href="opera-hf/header-footer.css" />
     <style>
       :root { color-scheme: dark; --bg: #0e0e0c; --card: #17171f; --line: #2a2a36; --text: #fffef7; --dim: #9a9aab; --accent: #fa1e4e;

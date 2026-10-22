@@ -34,13 +34,6 @@ html = html.replace(/<picture>[\s\S]*?<\/picture>/g, (m) => {
   )
 })
 
-// Drop the "Cookie Consent" withdraw link — no cookie-consent here. Don't wrap
-// the removed markup in an HTML comment: `block--clickable` contains `--`.
-html = html.replace(
-  /(\s*<li>\s*<span class="hf__link cookie_withdraw block--clickable">[\s\S]*?<\/span>\s*<\/li>)/g,
-  '<!-- Cookie Consent link removed: no cookie-consent implementation here -->',
-)
-
 // Drop the language selector (removed from next.opera.com; no i18n here).
 html = html.replace(
   /(\s*<div class="footer__lang-box">[\s\S]*?<\/div>)/g,
