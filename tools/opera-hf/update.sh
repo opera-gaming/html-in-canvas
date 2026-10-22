@@ -14,17 +14,17 @@ TSC="$NEXT/node_modules/.bin/tsc"
 [ -d "$NEXT/src/templates/components" ] || { echo "not a next repo: $NEXT" >&2; exit 1; }
 
 OUT=site/opera-hf
-DEST="$OUT/fonts/soehne"
 IMAGES="$OUT/images"
 
-mkdir -p "$DEST" "$IMAGES/icons/arrows" "$IMAGES/svg" "$IMAGES/logo"
+mkdir -p "$IMAGES/icons/arrows" "$IMAGES/svg" "$IMAGES/logo"
 
 echo "› compiling header-footer.css..."
 "$SASS" --load-path="$NEXT/src/scss" --style=compressed --no-source-map \
   tools/opera-hf/export.scss /tmp/hic-hf-export.css 2>/dev/null
-# Drop the sass BOM and repoint the font URLs onto this site's prefix.
-sed '1s/^\xEF\xBB\xBF//; s|/assets/fonts/soehne/|/html-in-canvas/opera-hf/fonts/soehne/|g' \
-  /tmp/hic-hf-export.css > "$OUT/header-footer.css"
+# Drop the sass BOM, then swap the commercial Söhne fonts (referenced by next's SCSS) for the
+# free Inter Tight / Roboto Mono. Fails if any Söhne reference survives.
+sed '1s/^\xEF\xBB\xBF//' /tmp/hic-hf-export.css > "$OUT/header-footer.css"
+node tools/opera-hf/swap-fonts.mjs "$OUT/header-footer.css"
 
 echo "› rendering header-footer.html..."
 node tools/opera-hf/render-hf.mjs "$NEXT" > /tmp/hic-hf-export.html
@@ -35,7 +35,7 @@ sed -e 's|/assets/images/|/html-in-canvas/opera-hf/images/|g' \
     /tmp/hic-hf-export.html > "$OUT/header-footer.html"
 
 echo "› copying fonts and images..."
-cp "$NEXT/src/fonts/soehne/"*.woff2 "$DEST/"
+# Fonts: the free Inter Tight / Roboto Mono are tracked in $OUT/fonts; Söhne is never copied.
 cp "$NEXT/src/images/icons/arrows/right-clean.svg" "$IMAGES/icons/arrows/"
 cp "$NEXT/src/images/svg/arrow-down--new-dark.svg" "$NEXT/src/images/svg/arrow-down-white--new.svg" "$IMAGES/svg/"
 cp "$NEXT/src/images/logo/opera-logo-text-flat-2026.module.svg" \

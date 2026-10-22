@@ -3,6 +3,9 @@
 // links carry an "/html-in-canvas/..." prefix, so public/ is served under it,
 // mirroring the Vercel deployment.
 // Usage: node tools/serve.mjs [port]   → http://localhost:4173/html-in-canvas/
+// Consent bundle: set CONSENT_ORIGIN to a next.opera.com checkout/host to try the real popup locally, e.g.
+//   CONSENT_ORIGIN=http://localhost:3000 node tools/serve.mjs   (npm run dev in the next repo)
+// Without it /assets/consent/* is a no-op stub (the bundle is published by next.opera.com in production).
 import http from 'node:http'
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { dirname, extname, join, normalize } from 'node:path'
@@ -42,8 +45,35 @@ function resolve(urlPath) {
   return abs
 }
 
+// The consent bundle belongs to next.opera.com (same origin in production), so it is not part of public/.
+const CONSENT_PREFIX = '/assets/consent/'
+const CONSENT_ORIGIN = process.env.CONSENT_ORIGIN?.replace(/\/$/, '')
+
+async function serveConsent(req, res) {
+  if (!CONSENT_ORIGIN) {
+    res.writeHead(200, { 'Content-Type': MIME['.js'], 'Cache-Control': 'no-store' })
+    res.end('// consent bundle is served by next.opera.com; no-op in local preview\n')
+    return
+  }
+  try {
+    const upstream = await fetch(CONSENT_ORIGIN + req.url)
+    res.writeHead(upstream.status, {
+      'Content-Type': upstream.headers.get('content-type') || MIME['.js'],
+      'Cache-Control': 'no-store',
+    })
+    res.end(Buffer.from(await upstream.arrayBuffer()))
+  } catch (err) {
+    res.writeHead(502, { 'Content-Type': 'text/plain' })
+    res.end(`consent proxy to ${CONSENT_ORIGIN} failed: ${err.message}`)
+  }
+}
+
 http
   .createServer((req, res) => {
+    if (req.url.startsWith(CONSENT_PREFIX)) {
+      serveConsent(req, res)
+      return
+    }
     const abs = resolve(req.url)
     if (!abs || !existsSync(abs)) {
       res.writeHead(404, { 'Content-Type': 'text/plain' })

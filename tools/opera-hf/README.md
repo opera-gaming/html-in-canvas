@@ -31,10 +31,12 @@ Baked into regeneration:
 
 - Header is always dark (dark tokens + white logo) — the landing page is dark, not the OS.
 - “Next” keeps linking to the root (`/`) of next.opera.com; the footer breadcrumb reflects the html-in-canvas path.
-- Footer drops the “Cookie Consent” link and the language selector (not implemented here).
+- Footer drops the language selector (not implemented here). The “Cookie Consent” link is kept: it is wired up by the
+  consent bundle (`/assets/consent/v1/consent.js`) that the next.opera.com site publishes on the same origin, so
+  this repo holds no consent code, legal text or GTM container ID. Without the bundle (forks, local preview,
+  `vercel.app` previews) the link does nothing and no analytics load.
 
-> ⚠️ `update.sh` copies the commercial **Söhne** webfonts from the next repo and regenerates
-> `header-footer.css` with `@font-face`/font-family references to them. Söhne must never be
-> committed (`site/opera-hf/fonts/soehne/` is gitignored) nor shipped: after each regeneration,
-> re-apply the Söhne → Inter Tight / Roboto Mono swap (delete `site/opera-hf/fonts/soehne/` and
-> restore the Inter Tight/Roboto Mono `@font-face` + family declarations in `header-footer.css`).
+Fonts: next's SCSS references the commercial **Söhne** webfonts, which must never be committed or shipped from
+this public repo. `update.sh` never copies them; `swap-fonts.mjs` rewrites the compiled `header-footer.css` to the
+free Inter Tight / Roboto Mono (OFL 1.1, tracked in `site/opera-hf/fonts/`) and fails the run if any Söhne
+reference survives. `site/opera-hf/fonts/soehne/` is also gitignored as a second safeguard.
